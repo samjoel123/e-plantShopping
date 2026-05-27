@@ -1,18 +1,28 @@
 import { useDispatch } from "react-redux";
-import { addItem } from "../redux/CartSlice";
+
+import { addItem }
+from "../redux/CartSlice";
+
+import { useState } from "react";
 
 function ProductList() {
 
   const dispatch = useDispatch();
 
+  const [addedItems, setAddedItems] =
+    useState([]);
+
   const plants = {
+
     Indoor: [
+
       {
         id: 1,
         name: "Snake Plant",
         price: 15,
         image: "https://via.placeholder.com/150"
       },
+
       {
         id: 2,
         name: "Peace Lily",
@@ -22,23 +32,56 @@ function ProductList() {
     ],
 
     Outdoor: [
+
       {
         id: 3,
         name: "Rose Plant",
         price: 25,
         image: "https://via.placeholder.com/150"
       },
+
       {
         id: 4,
         name: "Aloe Vera",
         price: 10,
         image: "https://via.placeholder.com/150"
       }
+    ],
+
+    Medicinal: [
+
+      {
+        id: 5,
+        name: "Tulsi",
+        price: 12,
+        image: "https://via.placeholder.com/150"
+      },
+
+      {
+        id: 6,
+        name: "Neem",
+        price: 18,
+        image: "https://via.placeholder.com/150"
+      }
     ]
+  };
+
+  const handleAddToCart = (plant) => {
+
+    dispatch(addItem(plant));
+
+    setAddedItems([
+      ...addedItems,
+      plant.id
+    ]);
   };
 
   return (
     <div>
+
+      <nav>
+        <h1>Paradise Nursery</h1>
+      </nav>
 
       <h1>Plant Products</h1>
 
@@ -64,11 +107,27 @@ function ProductList() {
                 <p>${plant.price}</p>
 
                 <button
+                  disabled={
+                    addedItems.includes(
+                      plant.id
+                    )
+                  }
+
                   onClick={() =>
-                    dispatch(addItem(plant))
+                    handleAddToCart(plant)
                   }
                 >
-                  Add to Cart
+
+                  {
+                    addedItems.includes(
+                      plant.id
+                    )
+
+                    ? "Added to Cart"
+
+                    : "Add to Cart"
+                  }
+
                 </button>
 
               </div>
@@ -76,6 +135,7 @@ function ProductList() {
           </div>
         )
       )}
+
     </div>
   );
 }
