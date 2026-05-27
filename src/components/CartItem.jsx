@@ -32,6 +32,12 @@ function CartItem() {
 
         <div key={item.id}>
 
+          <img
+            src={item.image}
+            alt={item.name}
+            width="100"
+          />
+
           <h3>{item.name}</h3>
 
           <p>Price: ${item.price}</p>
@@ -83,9 +89,15 @@ function CartItem() {
         ${calculateTotalAmount()}
       </h2>
 
-      <button>Continue Shopping</button>
+      <button>
+        Continue Shopping
+      </button>
 
-      <button>Checkout</button>
+      <button
+        onClick={() => alert("Checkout")}
+      >
+        Checkout
+      </button>
 
     </div>
   );
