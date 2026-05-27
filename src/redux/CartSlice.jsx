@@ -1,120 +1,74 @@
-import { useDispatch } from "react-redux";
-import { addItem } from "../redux/CartSlice";
-import { useState } from "react";
+import { createSlice } from "@reduxjs/toolkit";
 
-function ProductList() {
+const initialState = {
+  cartItems: []
+};
 
-  const dispatch = useDispatch();
+const cartSlice = createSlice({
+  name: "cart",
+  initialState,
 
-  const [addedItems, setAddedItems] = useState([]);
+  reducers: {
 
-  const plants = {
+    addItem: (state, action) => {
 
-    Indoor: [
-      {
-        id: 1,
-        name: "Snake Plant",
-        price: 15,
-        image: "https://via.placeholder.com/150"
-      },
-      {
-        id: 2,
-        name: "Peace Lily",
-        price: 20,
-        image: "https://via.placeholder.com/150"
+      const existingItem =
+        state.cartItems.find(
+          (item) =>
+            item.id === action.payload.id
+        );
+
+      if (existingItem) {
+
+        existingItem.quantity += 1;
+
+      } else {
+
+        state.cartItems.push({
+          ...action.payload,
+          quantity: 1
+        });
       }
-    ],
+    },
 
-    Outdoor: [
-      {
-        id: 3,
-        name: "Rose Plant",
-        price: 25,
-        image: "https://via.placeholder.com/150"
-      },
-      {
-        id: 4,
-        name: "Aloe Vera",
-        price: 10,
-        image: "https://via.placeholder.com/150"
+    removeItem: (state, action) => {
+
+      state.cartItems =
+        state.cartItems.filter(
+          (item) =>
+            item.id !== action.payload
+        );
+    },
+
+    updateQuantity: (state, action) => {
+
+      const item =
+        state.cartItems.find(
+          (item) =>
+            item.id === action.payload.id
+        );
+
+      if (item) {
+
+        item.quantity =
+          action.payload.quantity;
+
+        if (item.quantity <= 0) {
+
+          state.cartItems =
+            state.cartItems.filter(
+              (i) => i.id !== item.id
+            );
+        }
       }
-    ],
+    }
+  }
+});
 
-    Medicinal: [
-      {
-        id: 5,
-        name: "Tulsi",
-        price: 12,
-        image: "https://via.placeholder.com/150"
-      },
-      {
-        id: 6,
-        name: "Neem",
-        price: 18,
-        image: "https://via.placeholder.com/150"
-      }
-    ]
-  };
+export const {
+  addItem,
+  removeItem,
+  updateQuantity
+} = cartSlice.actions;
 
-  const handleAddToCart = (plant) => {
-
-    dispatch(addItem(plant));
-
-    setAddedItems([...addedItems, plant.id]);
-  };
-
-  return (
-    <div>
-
-      <nav>
-        <h1>Paradise Nursery</h1>
-      </nav>
-
-      <h1>Plant Products</h1>
-
-      {Object.entries(plants).map(
-        ([category, items]) => (
-
-          <div key={category}>
-
-            <h2>{category}</h2>
-
-            {items.map((plant) => (
-
-              <div key={plant.id}>
-
-                <img
-                  src={plant.image}
-                  alt={plant.name}
-                  width="150"
-                />
-
-                <h3>{plant.name}</h3>
-
-                <p>${plant.price}</p>
-
-                <button
-                  disabled={
-                    addedItems.includes(plant.id)
-                  }
-                  onClick={() =>
-                    handleAddToCart(plant)
-                  }
-                >
-                  {
-                    addedItems.includes(plant.id)
-                    ? "Added to Cart"
-                    : "Add to Cart"
-                  }
-                </button>
-
-              </div>
-            ))}
-          </div>
-        )
-      )}
-    </div>
-  );
-}
-
-export default ProductList;
+export default cartSlice.reducer;
