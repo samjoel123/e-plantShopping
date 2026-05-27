@@ -1,34 +1,92 @@
+import { useSelector, useDispatch } from "react-redux";
+
+import {
+  removeItem,
+  updateQuantity
+} from "../redux/CartSlice";
+
 function CartItem() {
 
-  const item = {
-    name: "Aloe Vera",
-    price: "$10",
-    quantity: 1
+  const cart =
+    useSelector(
+      (state) => state.cart.cartItems
+    );
+
+  const dispatch = useDispatch();
+
+  const calculateTotalAmount = () => {
+
+    return cart.reduce(
+      (total, item) =>
+        total + item.price * item.quantity,
+      0
+    );
   };
 
   return (
     <div>
+
       <h1>Shopping Cart</h1>
 
-      <div>
-        <h3>{item.name}</h3>
+      {cart.map((item) => (
 
-        <p>{item.price}</p>
+        <div key={item.id}>
 
-        <p>Quantity: {item.quantity}</p>
+          <h3>{item.name}</h3>
 
-        <button>+</button>
+          <p>Price: ${item.price}</p>
 
-        <button>-</button>
+          <p>
+            Total:
+            ${item.price * item.quantity}
+          </p>
 
-        <button>Delete</button>
-      </div>
+          <button
+            onClick={() =>
+              dispatch(
+                updateQuantity({
+                  id: item.id,
+                  quantity: item.quantity + 1
+                })
+              )
+            }
+          >
+            +
+          </button>
 
-      <h2>Total Cart Amount: $10</h2>
+          <button
+            onClick={() =>
+              dispatch(
+                updateQuantity({
+                  id: item.id,
+                  quantity: item.quantity - 1
+                })
+              )
+            }
+          >
+            -
+          </button>
+
+          <button
+            onClick={() =>
+              dispatch(removeItem(item.id))
+            }
+          >
+            Delete
+          </button>
+
+        </div>
+      ))}
+
+      <h2>
+        Total Cart Amount:
+        ${calculateTotalAmount()}
+      </h2>
 
       <button>Continue Shopping</button>
 
       <button>Checkout</button>
+
     </div>
   );
 }
